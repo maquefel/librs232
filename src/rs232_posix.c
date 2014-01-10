@@ -48,8 +48,10 @@ rs232_init(void)
 		return NULL;
 
 	p->pt = (struct rs232_posix_t *) malloc(sizeof(struct rs232_posix_t));
-	if (p->pt == NULL)
+	if (p->pt == NULL) {
+		free(p);
 		return NULL;
+	}
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
