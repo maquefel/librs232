@@ -59,7 +59,7 @@ const char* rs232_ascii_dump(const void *data, unsigned int len);
 			SYSTEMTIME t; \
 			GetLocalTime(&t); \
 			fprintf(stderr, "[%02d:%02d:%02d.%03d] %s(%d):%s: " x, t.wHour, t.wMinute, \
-				t.wSecond, t.wMilliseconds,  __FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__); \
+				t.wSecond, t.wMilliseconds,  __FILE__, __LINE__, __func__, ## __VA_ARGS__); \
 		}
  #else
   #define DBG(x, ...) \
@@ -67,7 +67,7 @@ const char* rs232_ascii_dump(const void *data, unsigned int len);
 			time_t now = time(NULL); \
 			struct tm* t = localtime(&now); \
 			fprintf(stderr, "[%02d:%02d:%02d] %s(%d):%s: " x, t->tm_hour, t->tm_min, \
-				t->tm_sec,  __FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__); \
+				t->tm_sec,  __FILE__, __LINE__, __func__, ## __VA_ARGS__); \
 		}
  #endif /* #if defined(WIN32) || defined(UNDER_CE) */
 #else
