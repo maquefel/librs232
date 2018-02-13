@@ -221,6 +221,13 @@ RS232_LIB const char * rs232_strstop(unsigned int stop);
 RS232_LIB const char * rs232_strflow(unsigned int flow);
 RS232_LIB const char * rs232_strdtr(unsigned int dtr);
 RS232_LIB const char * rs232_strrts(unsigned int rts);
+RS232_LIB enum rs232_baud_e rs232_baudstr(const char* baud);
+RS232_LIB enum rs232_data_e rs232_datastr(const char* data);
+RS232_LIB enum rs232_parity_e rs232_paritystr(const char* parity);
+RS232_LIB enum rs232_stop_e rs232_stopstr(const char* stop);
+RS232_LIB enum rs232_flow_e rs232_flowstr(const char* flow);
+RS232_LIB enum rs232_dtr_e rs232_dtrstr(const char* dtr);
+RS232_LIB enum rs232_rts_e rs232_rtsstr(const char* rts);
 RS232_LIB unsigned int rs232_fd(struct rs232_port_t *p);
 
 #endif /* __LIBRS232_H__ */

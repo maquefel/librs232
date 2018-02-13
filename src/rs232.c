@@ -160,6 +160,20 @@ rs232_strbaud(unsigned int baud)
 	return rs232_baud[baud];
 }
 
+RS232_LIB enum rs232_baud_e
+rs232_baudstr(const char* baud)
+{
+	int i = 0;
+	
+	DBG("baud=%s\n", baud);
+	
+	for(;i <= RS232_BAUD_MAX; i++)
+		if(strncmp(rs232_baud[i], baud, strlen(rs232_baud[i])) == 0)
+			break;
+	
+	return (enum rs232_baud_e)i;
+}
+
 RS232_LIB const char *
 rs232_strdata(unsigned int data)
 {
@@ -169,6 +183,20 @@ rs232_strdata(unsigned int data)
 		return NULL;
 
 	return rs232_data[data];
+}
+
+RS232_LIB enum rs232_data_e
+rs232_datastr(const char* data)
+{
+	int i = 0;
+	
+	DBG("data=%s\n", data);
+	
+	for(;i <= RS232_DATA_MAX; i++)
+		if(strncmp(rs232_data[i], data, strlen(rs232_data[i])) == 0)
+			break;
+	
+	return (enum rs232_data_e)i;
 }
 
 RS232_LIB const char *
@@ -182,6 +210,20 @@ rs232_strparity(unsigned int parity)
 	return rs232_parity[parity];
 }
 
+RS232_LIB enum rs232_parity_e
+rs232_paritystr(const char* parity)
+{
+	int i = 0;
+	
+	DBG("parity=%s\n", parity);
+	
+	for(;i <= RS232_PARITY_MAX; i++)
+		if(strncmp(rs232_parity[i], parity, strlen(rs232_parity[i])) == 0)
+			break;
+		
+	return (enum rs232_parity_e)i;
+}
+
 RS232_LIB const char *
 rs232_strstop(unsigned int stop)
 {
@@ -191,6 +233,20 @@ rs232_strstop(unsigned int stop)
 		return NULL;
 
 	return rs232_stop[stop];
+}
+
+RS232_LIB enum rs232_stop_e
+rs232_stopstr(const char* stop)
+{
+	int i = 0;
+	
+	DBG("stop=%s\n", stop);
+	
+	for(;i <= RS232_STOP_MAX; i++)
+		if(strncmp(rs232_stop[i], stop, strlen(rs232_stop[i])) == 0)
+			break;
+	
+	return (enum rs232_stop_e)i;
 }
 
 RS232_LIB const char *
@@ -204,6 +260,20 @@ rs232_strflow(unsigned int flow)
 	return rs232_flow[flow];
 }
 
+RS232_LIB enum rs232_flow_e
+rs232_flowstr(const char* flow)
+{
+	int i = 0;
+
+	DBG("flow=%s\n", flow);
+
+	for(;i <= RS232_FLOW_MAX; i++)
+		if(strncmp(rs232_flow[i], flow, strlen(rs232_flow[i])) == 0)
+			break;
+	
+	return (enum rs232_flow_e)i;
+}
+
 RS232_LIB const char *
 rs232_strdtr(unsigned int dtr)
 {
@@ -215,6 +285,20 @@ rs232_strdtr(unsigned int dtr)
 	return rs232_dtr[dtr];
 }
 
+RS232_LIB enum rs232_dtr_e
+rs232_dtrstr(const char* dtr)
+{
+	int i = 0;
+	
+	DBG("dtr=%s\n", dtr);
+	
+	for(;i <= RS232_DTR_MAX; i++)
+		if(strncmp(rs232_dtr[i], dtr, strlen(rs232_dtr[i])) == 0)
+			break;
+	
+	return (enum rs232_dtr_e)i;
+}
+
 RS232_LIB const char *
 rs232_strrts(unsigned int rts)
 {
@@ -224,6 +308,20 @@ rs232_strrts(unsigned int rts)
 		return NULL;
 
 	return rs232_rts[rts];
+}
+
+RS232_LIB enum rs232_rts_e
+rs232_rtsstr(const char* rts)
+{
+	int i = 0;
+	
+	DBG("rts=%s\n", rts);
+	
+	for(;i <= RS232_RTS_MAX; i++)
+		if(strncmp(rs232_rts[i], rts, strlen(rs232_rts[i])) == 0)
+			break;
+		
+	return (enum rs232_rts_e)i;
 }
 
 RS232_LIB const char *
