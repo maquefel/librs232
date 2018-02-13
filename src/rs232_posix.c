@@ -9,10 +9,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -57,7 +57,7 @@ rs232_init(void)
 
 	memset(p->pt, 0, sizeof(struct rs232_posix_t));
 	memset(p->dev, 0, RS232_STRLEN_DEVICE+1);
-	strncpy(p->dev, RS232_PORT_POSIX, RS232_STRLEN_DEVICE);
+	strncpyz(p->dev, RS232_PORT_POSIX, RS232_STRLEN_DEVICE);
 
 	p->baud = RS232_BAUD_115200;
 	p->data = RS232_DATA_8;
@@ -74,7 +74,7 @@ rs232_init(void)
 void
 rs232_end(struct rs232_port_t *p)
 {
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
@@ -97,13 +97,13 @@ rs232_end(struct rs232_port_t *p)
 }
 
 unsigned int
-rs232_in_qeue(struct rs232_port_t *p, unsigned int *in_bytes)
+rs232_in_queue(struct rs232_port_t *p, unsigned int *in_bytes)
 {
 	fd_set set;
 	int ret;
 	int b;
 	struct timeval tv;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
@@ -133,21 +133,21 @@ rs232_in_qeue(struct rs232_port_t *p, unsigned int *in_bytes)
 /* some USB<->RS232 converters buffer a lot, so this function tries to discard
    this buffer - useful mainly after rs232_open() */
 void
-rs232_in_qeue_clear(struct rs232_port_t *p)
+rs232_in_queue_clear(struct rs232_port_t *p)
 {
 	fd_set set;
 	unsigned int ret;
 	unsigned int blen;
 	unsigned char *buf = NULL;
 	struct timeval tv;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
 	if (!rs232_port_open(p))
 		return;
 
-	rs232_in_qeue(p, &blen);
+	rs232_in_queue(p, &blen);
 	if (blen > 0) {
 		buf = (unsigned char*) malloc(blen * sizeof(unsigned char*)+1);
 		if (buf == NULL)
@@ -176,7 +176,7 @@ rs232_read(struct rs232_port_t *p, unsigned char *buf, unsigned int buf_len,
 	   unsigned int *read_len)
 {
 	int r;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p buf_len=%d\n", (void *)p, p->pt, buf_len);
 
@@ -217,7 +217,7 @@ rs232_read_timeout_forced(struct rs232_port_t *p, unsigned char *buf,
 	int reti;
 	fd_set set;
 	int r;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 	struct timeval tv;
 	struct timeval t1;
 	struct timeval t2;
@@ -302,7 +302,7 @@ rs232_read_timeout(struct rs232_port_t *p, unsigned char *buf,
 	fd_set set;
 	int r;
 	struct timeval tv;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p buf_len=%d timeout=%d\n", (void *)p, p->pt,
 		buf_len, timeout);
@@ -347,10 +347,10 @@ rs232_write(struct rs232_port_t *p, const unsigned char *buf, unsigned int buf_l
 		unsigned int *write_len)
 {
 	int w;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
-	DBG("p=%p p->pt=%p hex='%s' ascii='%s' buf_len=%d\n", 
-	    (void *)p, p->pt, rs232_hex_dump(buf, buf_len), 
+	DBG("p=%p p->pt=%p hex='%s' ascii='%s' buf_len=%d\n",
+	    (void *)p, p->pt, rs232_hex_dump(buf, buf_len),
 	    rs232_ascii_dump(buf, buf_len), buf_len);
 
 	if (!rs232_port_open(p))
@@ -380,7 +380,7 @@ rs232_write_timeout(struct rs232_port_t *p, const unsigned char *buf,
 	int ret;
 	fd_set set;
 	int w;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 	struct timeval tv;
 
 	DBG("p=%p p->pt=%p timeout=%d\n", (void *)p, p->pt, timeout);
@@ -426,7 +426,7 @@ rs232_open(struct rs232_port_t *p)
 {
 	int flags;
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
@@ -436,7 +436,7 @@ rs232_open(struct rs232_port_t *p)
 		return RS232_ERR_OPEN;
 	}
 
-	/* 
+	/*
 	 * On OSX (and maybe on more systems), we need to open() the port with
 	 * O_NDELAY, because otherwise it would block forever waiting for DCD
 	 * signal, so here we restore back to blocking operations.
@@ -483,7 +483,7 @@ void
 rs232_set_device(struct rs232_port_t *p, const char *device)
 {
 	DBG("p=%p old=%s new=%s\n", (void *)p, p->dev, device);
-	strncpy(p->dev, device, RS232_STRLEN_DEVICE);
+	strncpyz(p->dev, device, RS232_STRLEN_DEVICE);
 	return;
 }
 
@@ -491,7 +491,7 @@ unsigned int
 rs232_set_baud(struct rs232_port_t *p, enum rs232_baud_e baud)
 {
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p baud=%d (%s bauds)\n",
 	    (void *)p, p->pt, baud, rs232_strbaud(baud));
@@ -553,7 +553,7 @@ rs232_set_dtr(struct rs232_port_t *p, enum rs232_dtr_e state)
 {
 	int ret;
 	int set;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p dtr=%d (dtr control %s)\n",
 	    (void *)p, p->pt, state, rs232_strdtr(state));
@@ -583,7 +583,7 @@ rs232_set_dtr(struct rs232_port_t *p, enum rs232_dtr_e state)
 		DBG("%s\n", "TIOCMSET RS232_ERR_IOCTL");
 		return RS232_ERR_IOCTL;
 	}
-	
+
 	p->dtr = state;
 
 	return RS232_ERR_NOERROR;
@@ -594,7 +594,7 @@ rs232_set_rts(struct rs232_port_t *p, enum rs232_rts_e state)
 {
 	int ret;
 	int set;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p rts=%d (rts control %s)\n",
 	    (void *)p, p->pt, state, rs232_strrts(state));
@@ -624,7 +624,7 @@ rs232_set_rts(struct rs232_port_t *p, enum rs232_rts_e state)
 		DBG("%s\n", "TIOCMSET RS232_ERR_IOCTL");
 		return RS232_ERR_IOCTL;
 	}
-	
+
 	p->rts = state;
 
 	return RS232_ERR_NOERROR;
@@ -634,7 +634,7 @@ unsigned int
 rs232_set_parity(struct rs232_port_t *p, enum rs232_parity_e parity)
 {
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p parity=%d (parity %s)\n",
 	    (void *)p, p->pt, parity, rs232_strparity(parity));
@@ -669,7 +669,7 @@ unsigned int
 rs232_set_stop(struct rs232_port_t *p, enum rs232_stop_e stop)
 {
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p stop=%d (%s stop bits)\n",
 	    (void *)p, p->pt, stop, rs232_strstop(stop));
@@ -700,7 +700,7 @@ unsigned int
 rs232_set_data(struct rs232_port_t *p, enum rs232_data_e data)
 {
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p data=%d (%s data bits)\n",
 	    (void *)p, p->pt, data, rs232_strdata(data));
@@ -738,7 +738,7 @@ unsigned int
 rs232_set_flow(struct rs232_port_t *p, enum rs232_flow_e flow)
 {
 	struct termios term;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p flow=%d (flow control %s)\n",
 	    (void *)p, p->pt, flow, rs232_strflow(flow));
@@ -775,7 +775,7 @@ unsigned int
 rs232_flush(struct rs232_port_t *p)
 {
 	int ret;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
@@ -793,7 +793,7 @@ unsigned int
 rs232_close(struct rs232_port_t *p)
 {
 	int ret;
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p\n", (void *)p, p->pt);
 
@@ -811,7 +811,7 @@ rs232_close(struct rs232_port_t *p)
 unsigned int
 rs232_fd(struct rs232_port_t *p)
 {
-	struct rs232_posix_t *ux = p->pt;
+	struct rs232_posix_t *ux = (struct rs232_posix_t *)p->pt;
 
 	DBG("p=%p p->pt=%p ux->fd=%d\n", (void *)p, p->pt, ux->fd);
 
